@@ -31,6 +31,9 @@ class Document
     #[ORM\OneToMany(mappedBy: 'document', targetEntity: Acces::class)]
     private $acces;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $nom;
+
     public function __construct()
     {
         $this->acces = new ArrayCollection();
@@ -115,6 +118,18 @@ class Document
                 $acce->setDocument(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): self
+    {
+        $this->nom = $nom;
 
         return $this;
     }
