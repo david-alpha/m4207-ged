@@ -28,9 +28,7 @@ class AdminController extends AbstractController
 	#[Route('/login', name: 'login')]
     public function login(): Response
     {
-        return $this->render('admin/login.html.twig', [
-            'controller_name' => 'AdminController',
-        ]);
+        return $this->render('admin/login.html.twig');
     }
 	#[Route('/logout', name: 'logout')]
     public function logout(Request $request): Response
@@ -63,7 +61,7 @@ class AdminController extends AbstractController
 				$session->set('roleUser', $user->getRole());
 				$session->set('idUser', $user->getId());
 				dump($session->get('nameUser'),$session->get('roleUser'));
-				return $this->render('admin/dashboard.html.twig');
+				return $this->redirectToRoute('dashboard');
 			}else{
 				return $this->redirectToRoute('login');
 			}
@@ -103,8 +101,7 @@ class AdminController extends AbstractController
 		if($session->get('roleUser')<1 ||$session->get('roleUser') >3){
 			//4) si problème on renvoie sur le login
 			return $this->redirectToRoute('login');
-		}else{
-			
+		}else{	
 			// on upload le doc
 			$doc = new Document();
 			$doc->setNom($request->request->get('nom'));
@@ -126,6 +123,27 @@ class AdminController extends AbstractController
 		}
     }
 	//FIN Partie correspondant à la gestion des Documents
+	#[Route('/dashboard', name: 'dashboard')]
+    public function dashboard(ManagerRegistry $doctrine, Request $request, EntityManagerInterface $em): Response
+    {
+		//Securité 
+		//1) on met Request dans les paramètres de la fonction
+		//2) on récupère la fonction
+		$session = $request->getSession();
+		//3) on teste si le role est cohérent
+		if($session->get('roleUser')<1 ||$session->get('roleUser') >3){
+			//4) si problème on renvoie sur le login
+			return $this->redirectToRoute('login');
+		}else{	
+			// on récupère tous les accès de l'user connecté
+			$listeDocuments = $em->getRepository(Acces::class)->findByUtilisateur($em->getRepository(User::class)->findOneById($session->get('idUser')));
+			//5) sinon on renvoie la page demandée.
+			dump($listeDocuments);
+			return $this->render('admin/dashboard.html.twig', [
+				'listeDocuments' => $listeDocuments
+			]);
+		}
+    }
 }
 
 
