@@ -119,7 +119,7 @@ class AdminController extends AbstractController
 			$em->persist($acces);
 			$em->flush();
 			//5) sinon on renvoie la page demandée.
-			return $this->render('admin/dashboard.html.twig');
+			return $this->redirectToRoute('dashboard');
 		}
     }
 	//FIN Partie correspondant à la gestion des Documents
