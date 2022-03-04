@@ -124,6 +124,14 @@ class AdminController extends AbstractController
 			$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($session->get('idUser')));
 			$em->persist($acces);
 			$em->flush();
+			if($request->request->get('user')!="null"){
+				$acces = new Acces();
+				$acces->setDocument($doc);
+				$acces->setAutorisation($doctrine->getRepository(Autorisation::class)->findOneById(2));
+				$acces->setUtilisateur($doctrine->getRepository(User::class)->findOneById($request->request->get('user')));
+				$em->persist($acces);
+				$em->flush();
+			}
 			//5) sinon on renvoie la page demandée.
 			return $this->redirectToRoute('dashboard');
 		}
