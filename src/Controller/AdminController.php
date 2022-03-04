@@ -87,6 +87,7 @@ class AdminController extends AbstractController
 			//5) sinon on renvoie la page demandée.
 			return $this->render('admin/insertDocument.html.twig', [
 				'genres' => $doctrine->getRepository(Genre::class)->findAll(),
+				'users' => $doctrine->getRepository(User::class)->findAll(),
 			]);
 		}
     }
@@ -97,6 +98,7 @@ class AdminController extends AbstractController
 		//1) on met Request dans les paramètres de la fonction
 		//2) on récupère la fonction
 		$session = $request->getSession();
+		//dd($request->request->get('choixBox'));
 		//3) on teste si le role est cohérent
 		if($session->get('roleUser')<1 ||$session->get('roleUser') >3){
 			//4) si problème on renvoie sur le login
@@ -106,7 +108,11 @@ class AdminController extends AbstractController
 			$doc = new Document();
 			$doc->setNom($request->request->get('nom'));
 			$doc->setChemin("toto");
-			$doc->setActif(1);
+			if($request->request->get('choixBox')=="on"){
+				$doc->setActif(1);
+			}else{
+				$doc->setActif(0);
+			}
 			$doc->setCreatedAt(new \DatetimeImmutable);
 			$doc->setType($doctrine->getRepository(Genre::class)->findOneById($request->request->get('genre')));
 			$em->persist($doc);
